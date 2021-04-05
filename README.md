@@ -97,3 +97,5 @@ with open(directory.replace('.json', '-test.json'), 'w') as g2:
     g2.writelines(test_dataset)
 print(len(dataset) == len(test_dataset) + len(train_dataset))
 ```
+
+Note that publishing ```date``` of each entry is in a float number. We count the number of days between the actual date and 'Jan 1st, 1970', i.e., the Unix time ```0```. Then we divide this number by ```1e5```, resulting in a float number between 0 to 1. This is to avoid potential overflow problems. The publishing date for each article is not always clear, so we apply ```0.0``` to those without a clear date.
