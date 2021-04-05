@@ -86,16 +86,14 @@ with open(directory, 'r') as f:
 shuffle = True
 if shuffle:
     random.shuffle(dataset)
+    
 ratio = 0.3 # ratio of test set
 num = len(dataset)
-train_dataset = dataset[0:round(num * (1 - ratio))]
-test_dataset = dataset[round(num * (1 - ratio)):]
 
 with open(directory.replace('.json', '-train.json'), 'w') as g1:
-    g1.writelines(train_dataset)
+    g1.writelines(dataset[0:round(num * (1 - ratio))])
 with open(directory.replace('.json', '-test.json'), 'w') as g2:
-    g2.writelines(test_dataset)
-print(len(dataset) == len(test_dataset) + len(train_dataset))
+    g2.writelines(dataset[round(num * (1 - ratio)):])
 ```
 
 Note that publishing ```date``` of each entry is in a float number. We count the number of days between the actual date and 'Jan 1st, 1970', i.e., the Unix time ```0```. Then we divide this number by ```1e5```, resulting in a float number between 0 to 1. This is to avoid potential overflow problems. The publishing date for each article is not always clear, so we apply ```0.0``` to those without a clear date.
