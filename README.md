@@ -14,7 +14,7 @@ There are around seven 'fields' in this dataset, namely ```title```, ```text```,
 import spacy
 import torch
 from torchtext.legacy import data
-from torchtext.legacy.data import Field, BucketIterator, RawField, LabelField
+from torchtext.legacy.data import Field, LabelField, BucketIterator
 
 spacy_en = spacy.load('en_core_web_sm')
 
