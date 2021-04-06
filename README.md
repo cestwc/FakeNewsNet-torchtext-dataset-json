@@ -83,6 +83,7 @@ TITLE.vocab = TEXT.vocab
 KEYWORDS.vocab = TEXT.vocab
 SUMMARY.vocab = TEXT.vocab
 TWEETS.build_vocab(train_data)
+LABEL.build_vocab(train_data)
 
 BATCH_SIZE = 64
 
