@@ -69,8 +69,8 @@ fields = {'title': ('title', TITLE), 'text': ('text', TEXT), 'tweets':('tweets',
 
 train_data, test_data = data.TabularDataset.splits(
                             path = 'your-path',
-                            train = 'fakenewsnet-train.json',
-                            test = 'fakenewsnet-test.json',
+                            train = 'fakenewsnet_sm-train.json',
+                            test = 'fakenewsnet_sm-test.json',
                             format = 'json',
                             fields = fields
 )
@@ -111,7 +111,7 @@ by the way, you may want to split the dataset into 'train' and 'test' like this
 import random
 random.seed(42)
 
-directory = 'your-path/fakenewsnet.json'
+directory = 'your-path/fakenewsnet_sm.json' # _sm stands for 'small' dataset
 with open(directory, 'r') as f:
     dataset = f.readlines()
 shuffle = True
