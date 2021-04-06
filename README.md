@@ -41,20 +41,24 @@ TEXT = Field(tokenize = tokenize_en,
 TITLE = Field(tokenize = tokenize_en, 
             init_token = '<sos>', 
             eos_token = '<eos>', 
-            lower = True)
+            lower = True, 
+            include_lengths = True)
 
 TWEETS = Field(tokenize = tokenize_en, 
             init_token = '<sos>', 
             eos_token = '<eos>', 
-            lower = True)
+            lower = True, 
+            include_lengths = True)
 	    
 KEYWORDS = Field(tokenize = tokenize_en,
-            lower = True)
+            lower = True, 
+            include_lengths = True)
 
 SUMMARY = Field(tokenize = tokenize_en, 
             init_token = '<sos>', 
             eos_token = '<eos>', 
-            lower = True)
+            lower = True, 
+            include_lengths = True)
 			
 SPREAD = LabelField(dtype = torch.float, use_vocab=False, preprocessing=float) # yes, you use LabelField
 USER = LabelField(dtype = torch.float, use_vocab=False, preprocessing=float)
