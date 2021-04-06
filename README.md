@@ -61,7 +61,7 @@ USER = LabelField(dtype = torch.float, use_vocab=False, preprocessing=float)
 DATE = LabelField(dtype = torch.float, use_vocab=False, preprocessing=float)
 LABEL = LabelField(dtype = torch.float)
 
-fields = {'title': ('title', TITLE), 'text': ('text', TEXT), 'tweets':('tweets', TWEETS), 'spread':('spread', SPREAD), 'user':('user', USER), 'date':('date', DATE), 'keywords':('keywords', KEYWORDS), 'summary':('summary', SUMMARY), label':('label', LABEL)}
+fields = {'title': ('title', TITLE), 'text': ('text', TEXT), 'tweets':('tweets', TWEETS), 'spread':('spread', SPREAD), 'user':('user', USER), 'date':('date', DATE), 'keywords':('keywords', KEYWORDS), 'summary':('summary', SUMMARY), 'label':('label', LABEL)}
 
 train_data, test_data = data.TabularDataset.splits(
                             path = 'your-path',
