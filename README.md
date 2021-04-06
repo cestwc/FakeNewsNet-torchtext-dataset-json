@@ -72,13 +72,19 @@ train_data, test_data = data.TabularDataset.splits(
 )
 train_data, valid_data = train_data.split()
 
-TEXT.build_vocab(train_data)
+MAX_VOCAB_SIZE = 25_000
 
-TITLE.build_vocab(train_data)
+TEXT.build_vocab(train_data.text, train_data.title, train_data.summary, train_data.keywords, 
+                 max_size = MAX_VOCAB_SIZE, 
+                 vectors = "glove.6B.100d", 
+                 unk_init = torch.Tensor.normal_)
 
+TITLE.vocab = TEXT.vocab
+KEYWORDS.vocab = TEXT.vocab
+SUMMARY.vocab = TEXT.vocab
 TWEETS.build_vocab(train_data)
 
-BATCH_SIZE = 4
+BATCH_SIZE = 64
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
