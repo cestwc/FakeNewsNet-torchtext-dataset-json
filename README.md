@@ -7,6 +7,13 @@ The original dataset and downloader are from this [FakeNewsNet](https://github.c
 ## Why this dataset?
 There are also articles that just straight up don't exist online anymore, not even on the wayback machine (the website must send their data to the wayback machine). Additionally, to make it compatible with Torchtext, necessary modifications have been conducted.
 
+The sample dataset provided here is a balanced sample, i.e., it contains 1024 articles labelled as 'fake', and another 1024 articles labelled as 'real'.
+
+## Some features
+The data pulled with original [FakeNewsNet](https://github.com/KaiDMML/FakeNewsNet) occupy a enormous space on disk. However, these data are just seemingly bulky. There are a lot of 'id' information and repetitive tweets, which eat a lot of space. By the time we pulled the articles, the total number of **unfailing** articles is 20392, inclusive of both 'gossipcop' (19607) and 'politifact' (785). After removing those are with fewer than 25 words, there are altogether 19679 articles / entries. 4617 / 19679 are fake, and the rest 15062 / 19679 are real. You can find this 104MB version [here](https://drive.google.com/file/d/1-9TNx-0uIeLMXEOgtmYk7TMk57H_KDKD/view?usp=sharing)
+
+Due to the size limit, we randomly sampled (```seed(42)```) 1024 entries from each side, and release this version. We preprocess the texts by removing URLs, mentions, repetitive title-like phrases in each tweet, and replacing unicodes with closest ASCII characters. Of course, more cleaning could be applied, though we feel it is ok for learning models so far.
+
 ## Usage
 There are around nine 'fields' in this dataset, namely ```title```, ```text```, ```tweets```(aggregated), ```spread``` number count, distinct ```user``` number to spread, publish ```date``` of the article in float number, ```summary``` and ```keywords``` (aggregated), and finally ```label``` of the article whether it is 'real' or 'fake'. You may opt to ignore the meta data, if you would like to run a text summarization task using the ```text``` and ```title```. We ignore the rest of information, e.g., the source url, as it would greatly defeat the purpose of 'natural language' inference. There are websites that always intend to produce fake news. To load the (sample) dataset using Torchtext, try this:
 
