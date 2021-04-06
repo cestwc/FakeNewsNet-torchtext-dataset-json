@@ -84,9 +84,10 @@ KEYWORDS.vocab = TEXT.vocab
 SUMMARY.vocab = TEXT.vocab
 
 TWEETS.build_vocab(train_data.text, train_data.title, train_data.tweets,
-		max_size = MAX_VOCAB_SIZE, 
-                vectors = "glove.twitter.27B.100d", 
-                unk_init = torch.Tensor.normal_)
+                   max_size = MAX_VOCAB_SIZE, 
+                   vectors = "glove.twitter.27B.100d", 
+                   unk_init = torch.Tensor.normal_)
+		   
 LABEL.build_vocab(train_data)
 
 BATCH_SIZE = 64
