@@ -8,7 +8,7 @@ The original dataset and downloader are from this [FakeNewsNet](https://github.c
 There are also articles that just straight up don't exist online anymore, not even on the wayback machine (the website must send their data to the wayback machine). Additionally, to make it compatible with Torchtext, necessary modifications have been conducted.
 
 ## Usage
-There are around seven 'fields' in this dataset, namely ```title```, ```text```, ```tweets```(aggregated), ```spread``` number count, distinct ```user``` number to spread, publishing ```date``` of the article in float number, and finally ```label``` of the article whether it is 'real' or 'fake'. You may opt to ignore the meta data, if you would like to run a text summarization task using the ```text``` and ```title```. We ignore the rest of information, e.g., the source url, as it would greatly defeat the purpose of 'natural language' inference. There are websites that always intend to produce fake news. To load the (sample) dataset using Torchtext, try this:
+There are around nine 'fields' in this dataset, namely ```title```, ```text```, ```tweets```(aggregated), ```spread``` number count, distinct ```user``` number to spread, publish ```date``` of the article in float number, ```summary``` and ```keywords``` (aggregated), and finally ```label``` of the article whether it is 'real' or 'fake'. You may opt to ignore the meta data, if you would like to run a text summarization task using the ```text``` and ```title```. We ignore the rest of information, e.g., the source url, as it would greatly defeat the purpose of 'natural language' inference. There are websites that always intend to produce fake news. To load the (sample) dataset using Torchtext, try this:
 
 ```python
 import spacy
@@ -40,13 +40,21 @@ TWEETS = Field(tokenize = tokenize_en,
             init_token = '<sos>', 
             eos_token = '<eos>', 
             lower = True)
+	    
+KEYWORDS = Field(tokenize = tokenize_en,
+            lower = True)
+
+SUMMARY = Field(tokenize = tokenize_en, 
+            init_token = '<sos>', 
+            eos_token = '<eos>', 
+            lower = True)
 			
 SPREAD = LabelField(dtype = torch.float, use_vocab=False, preprocessing=float) # yes, you use LabelField
 USER = LabelField(dtype = torch.float, use_vocab=False, preprocessing=float)
 DATE = LabelField(dtype = torch.float, use_vocab=False, preprocessing=float)
 LABEL = LabelField(dtype = torch.float)
 
-fields = {'title': ('title', TITLE), 'text': ('text', TEXT), 'tweets':('tweets', TWEETS), 'spread':('spread', SPREAD), 'user':('user', USER), 'date':('date', DATE), 'label':('label', LABEL)}
+fields = {'title': ('title', TITLE), 'text': ('text', TEXT), 'tweets':('tweets', TWEETS), 'spread':('spread', SPREAD), 'user':('user', USER), 'date':('date', DATE), 'keywords':('keywords', KEYWORDS), 'summary':('summary', SUMMARY), label':('label', LABEL)}
 
 train_data, test_data = data.TabularDataset.splits(
                             path = 'your-path',
@@ -96,4 +104,6 @@ with open(directory.replace('.json', '-test.json'), 'w') as g2:
     g2.writelines(dataset[round(num * (1 - ratio)):])
 ```
 
-Note that publishing ```date``` of each entry is in a float number. We count the number of days between the actual date and 'Jan 1st, 1970', i.e., the Unix time ```0```. Then we divide this number by ```1e5```, resulting in a float number between 0 to 1. This is to avoid potential overflow problems. The publishing date for each article is not always clear, so we apply ```0.0``` to those without a clear date.
+Note that publish ```date``` of each entry is in a float number. We use the Unix time, and divide this number by ```1e10```, resulting in a float number between 0 to 1. This is to avoid potential overflow problems. The publishing date for each article is not always clear, so we apply ```0.0``` to those without a clear date.
+
+Many fields, like ```keywords``` or ```summary```, might not exist, either
