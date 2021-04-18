@@ -106,25 +106,11 @@ train_iterator, valid_iterator, test_iterator = BucketIterator.splits(
      device = device)
 ```
 
-by the way, you may want to split the dataset into 'train' and 'test' like this
+by the way, you may want to split the dataset into 'train', 'valid' and 'test' like this
 ```python
-import random
-random.seed(42)
+from util_dataset import split
 
-directory = 'your-path/fakenewsnet_sm.json' # _sm stands for 'small' dataset
-with open(directory, 'r') as f:
-    dataset = f.readlines()
-shuffle = True
-if shuffle:
-    random.shuffle(dataset)
-    
-ratio = 0.3 # ratio of test set
-num = len(dataset)
-
-with open(directory.replace('.json', '-train.json'), 'w') as g1:
-    g1.writelines(dataset[0:round(num * (1 - ratio))])
-with open(directory.replace('.json', '-test.json'), 'w') as g2:
-    g2.writelines(dataset[round(num * (1 - ratio)):])
+train_file, valid_file, test_file = split('fakenewsnet_sm.json', seed = 79, sets = ['train', 'valid', 'test'])
 ```
 
 Note that publish ```date``` of each entry is in a float number. We use the Unix time, and divide this number by ```1e10```, resulting in a float number between 0 to 1. This is to avoid potential overflow problems. The publishing date for each article is not always clear, so we apply ```0.0``` to those without a clear date.
