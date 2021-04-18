@@ -22,11 +22,14 @@ def split(directory, sets = ['train', 'test'], ratio = 0.3, shuffle = 1, seed = 
 		num = len(dataset)
 	datasets[sets[-1]] = dataset
 	
+	directories = []
 	for key, value in datasets.items():
-		with open(directory.replace('.json', '-' + key + '.json'), 'w') as f:
+		name = directory.replace('.json', '-' + key + '.json')
+		with open(name, 'w') as f:
 			f.writelines(value)
+		directories.append(name)
 			
-	return tuple(datasets.keys())[::-1]
+	return tuple(directories)[::-1]
 
 def concatenate(*directories, destiny = 'concatenated.json', shuffle = 1, seed = random.randint(1, 1000)):
 	dataset = []
