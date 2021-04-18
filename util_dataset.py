@@ -1,6 +1,7 @@
 import random
+from collections import OrderedDict
 
-def split(directory, shuffle = 1, seed = random.randint(1, 1000)):
+def split(directory, sets = ['train', 'test'], ratio = 0.3, shuffle = 1, seed = random.randint(1, 1000)):
 	with open(directory, 'r') as f:
 		dataset = f.readlines()
 
@@ -8,17 +9,24 @@ def split(directory, shuffle = 1, seed = random.randint(1, 1000)):
 		random.seed(seed)
 		random.shuffle(dataset)
 		
-	ratio = 0.3 # ratio of test set
+	sets.reverse()
+	
 	num = len(dataset)
-	train_dataset = dataset[0:round(num * (1 - ratio))]
-	test_dataset = dataset[round(num * (1 - ratio)):]
-
-	with open(directory.replace('.json', '-train.json'), 'w') as g1:
-		g1.writelines(train_dataset)
-	with open(directory.replace('.json', '-test.json'), 'w') as g2:
-		g2.writelines(test_dataset)
-
-	return len(dataset) == len(test_dataset) + len(train_dataset)
+	
+	datasets = OrderedDict()
+	
+	for x in sets[:-1]:
+		datasets[x] = dataset[round(num * (1 - ratio)):]
+		dataset = dataset[0:round(num * (1 - ratio))]
+		assert num == len(dataset) + len(datasets[x])
+		num = len(dataset)
+	datasets[sets[-1]] = dataset
+	
+	for key, value in datasets.items():
+		with open(directory.replace('.json', '-' + key + '.json'), 'w') as f:
+			f.writelines(value)
+			
+	return tuple(datasets.keys())[::-1]
 
 def concatenate(*directories, destiny = 'concatenated.json', shuffle = 1, seed = random.randint(1, 1000)):
 	dataset = []
