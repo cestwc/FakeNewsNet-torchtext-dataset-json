@@ -33,11 +33,6 @@ import spacy
 import numpy as np
 
 nlp = spacy.load("en_core_web_md")  # make sure to use larger package!
-doc1 = nlp("I like salty fries and hamburgers.")
-doc2 = nlp("Fast food tastes very good.")
-
-# Similarity of two documents
-print(doc1, "<->", doc2, doc1.similarity(doc2))
 
 def spacySimilarityTable(dataset, field = 'text'):
 	sentences = [json.loads(x)[field] for x in dataset]
@@ -49,6 +44,7 @@ def spacySimilarityTable(dataset, field = 'text'):
 			similarity = docs[i].similarity(docs[j])
 			table[i, j] = similarity
 			table[j, i] = similarity
-	ind = np.argsort(table, axis=0)
+			
+	ind = np.argsort(table, axis=0)[:, -10:]
 	
-	return table
+	return ind
