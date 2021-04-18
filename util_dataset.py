@@ -13,11 +13,9 @@ def split(directory, shuffle = 1, seed = random.randint(1, 1000)):
 	train_dataset = dataset[0:round(num * (1 - ratio))]
 	test_dataset = dataset[round(num * (1 - ratio)):]
 
-	fileName = directory.split('/')[-1]
-
-	with open(drivePath + fileName.replace('.json', '-train.json'), 'w') as g1:
+	with open(directory.replace('.json', '-train.json'), 'w') as g1:
 		g1.writelines(train_dataset)
-	with open(drivePath + fileName.replace('.json', '-test.json'), 'w') as g2:
+	with open(directory.replace('.json', '-test.json'), 'w') as g2:
 		g2.writelines(test_dataset)
 
 	return len(dataset) == len(test_dataset) + len(train_dataset)
