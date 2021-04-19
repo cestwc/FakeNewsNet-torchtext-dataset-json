@@ -32,9 +32,10 @@ def addNegtiveSamples(directory, fields = ['text', 'label'], shuffle = 1, seed =
 import spacy
 import numpy as np
 
-nlp = spacy.load("en_core_web_md")  # make sure to use larger package!
-
 def spacySimilarityTable(dataset, field = 'text'):
+	
+	nlp = spacy.load("en_core_web_md")  # make sure to use larger package!
+	
 	sentences = [json.loads(x)[field] for x in dataset]
 	docs = [nlp(sent) for sent in sentences]
 	num = len(dataset)
