@@ -28,7 +28,7 @@ def createSentenceCorpus(directory, shuffle = 1, seed = random.randint(1, 1000))
 			
 			s = {'text':sent.text}
 
-		sentenceDataset.append(json.dumps(positive) + '\n')
+		sentenceDataset.append(json.dumps(s) + '\n')
 
 	with open(directory, 'w') as f:
 		f.writelines(sentenceDataset)
