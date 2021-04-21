@@ -89,3 +89,41 @@ def createSentenceVectorDataset(directory, sent2vec, shuffle = 1, seed = random.
 	torch.save(vectorDataset, directory.replace('.json', '.pt'))
 
 	return directory.replace('.json', '.pt')
+
+
+class VectorPairDataset(torch.utils.data.Dataset):
+	def __init__(self, directory, seed = random.randint(1, 1000), device = torch.device('cpu')):
+		self.labels = labels
+		self.list_IDs = list_IDs
+		dataset = []
+		labels = []
+		rawDataset = torch.load(directory, map_location=device)
+		
+		num = len(rawDataset)
+		
+		for i, datum in enumerate(tqdm(rawDataset)):
+			
+			d_label = datum['label']
+			d_sents = datum['sentences']
+			if len(d_sents) > 1:
+				
+				for j in range(len(d_sents)):
+					for k in range(j, len(d_sents)):
+						torch.cat(list[d_sents[j].values()][0], list[d_sents[k].values()][0])
+						
+		
+
+	def __len__(self):
+		'Denotes the total number of samples'
+		return len(self.list_IDs)
+
+	def __getitem__(self, index):
+		'Generates one sample of data'
+		# Select sample
+		ID = self.list_IDs[index]
+
+		# Load data and get label
+		X = torch.load('data/' + ID + '.pt')
+		y = self.labels[ID]
+
+		return X, y
