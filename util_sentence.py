@@ -109,7 +109,12 @@ class VectorPairDataset(torch.utils.data.Dataset):
 				
 				for j in range(len(d_sents)):
 					for k in range(j, len(d_sents)):
-						torch.cat(list[d_sents[j].values()][0], list[d_sents[k].values()][0])
+						pair = torch.cat((list[d_sents[j].values()][0], list[d_sents[k].values()][0])), 0)
+						pair_label = 0 if d_label == 'real' else 1
+						dataset.append(pair)
+						labels.append(pair_label)
+			
+						
 						
 		
 
