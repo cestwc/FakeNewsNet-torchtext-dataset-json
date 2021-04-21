@@ -75,11 +75,11 @@ def createSentenceVectorDataset(directory, sent2vec, shuffle = 1, seed = random.
 	
 	vectorDataset = []
 
-	for _, datum in enumerate(dataset):
+	for _, datum in enumerate(tqdm(dataset)):
 
 		d = json.loads(datum)
 		
-		v = dict((k, d[k]) for k in ('label'))
+		v = dict((k, d[k]) for k in ['label'])
 		
 		v['sentences'] = [{sent:sent2vec(sent)} for sent in d['sentences']]
 		
