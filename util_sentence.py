@@ -1,7 +1,7 @@
 import json
-import tqdm
 import random
 from collections import OrderedDict
+from tqdm import tqdm
 
 import spacy
 spacy.prefer_gpu()
