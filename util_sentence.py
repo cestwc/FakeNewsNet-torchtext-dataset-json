@@ -22,7 +22,7 @@ def createSentenceCorpus(directory, shuffle = 1, seed = random.randint(1, 1000))
 
 	num = len(dataset)
 
-	for i, datum in enumerate(dataset):
+	for i, datum in enumerate(tqdm(dataset)):
 
 		d = json.loads(datum)
 		
@@ -48,7 +48,7 @@ def sentencizeText(directory, shuffle = 1, seed = random.randint(1, 1000)):
 
 	num = len(dataset)
 
-	for i, datum in enumerate(dataset):
+	for i, datum in enumerate(tqdm(dataset)):
 
 		d = json.loads(datum)
 		
