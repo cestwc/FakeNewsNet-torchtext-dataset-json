@@ -12,7 +12,7 @@ def addNegtiveSamples(directory, fields = ['text', 'label'], shuffle = 1, seed =
 		
 	num = len(dataset)
 		
-	for i, datum in enumerate(dataset):
+	for i, datum in enumerate(tqdm(dataset)):
 		
 		positive = json.loads(datum)
 		
@@ -40,7 +40,7 @@ def spacySimilarityTable(dataset, field = 'text'):
 	docs = [nlp(sent) for sent in sentences]
 	num = len(dataset)
 	table = np.zeros((num, num), dtype=float)
-	for i in range(num):
+	for i in range(tqdm(num)):
 		for j in range(i):
 			similarity = docs[i].similarity(docs[j])
 			table[i, j] = similarity
