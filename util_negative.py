@@ -1,5 +1,6 @@
 import json
 import random
+from tqdm import tqdm
 from collections import OrderedDict
 
 def addNegtiveSamples(directory, fields = ['text', 'label'], shuffle = 1, seed = random.randint(1, 1000)):
