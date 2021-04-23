@@ -94,88 +94,55 @@ import os
 
 class VectorPairDataset(torch.utils.data.Dataset):
 	def __init__(self, directory, seed = random.randint(1, 1000), device = torch.device('cpu')):
-		
-		labels = []
-		
-		batchSize = 128
-		
+				
 		rawDataset = torch.load(directory, map_location=device)
+		homologous = []
+		homologousLabels = []
 		rawSamples = []
 		
-		folder = directory.replace('.pt', '-pairs')
-		if os.path.exists(folder):
-			labels = torch.load(os.path.join(folder, 'labels.pt'), map_location=device)
 		
-		else:
-			dataset = []
-			
-			os.makedirs(folder)
+		num = len(rawDataset)
+
+		for i, datum in enumerate(tqdm(rawDataset)):
+
+			d_label = datum['label']
+			d_sents = datum['sentences']
+
+			for j in range(len(d_sents)):
+				for k in range(j, min(20, len(d_sents))):
+					pair = torch.cat((list(d_sents[j].values())[0], list(d_sents[k].values())[0]), 0)
+					pair_label = 0 if d_label == 'real' else 1
+					homologous.append(pair)
+					homologousLabels.append(pair_label)
+
+				rawSamples.append((list(d_sents[j].values())[0], i, d_label))
+
+
+		self.homologous = homologous
+		self.homologousLabels = homologousLabels
 		
-			num = len(rawDataset)
-
-			for i, datum in enumerate(tqdm(rawDataset)):
-
-				d_label = datum['label']
-				d_sents = datum['sentences']
-
-				for j in range(len(d_sents)):
-					for k in range(j, min(20, len(d_sents))):
-						pair = torch.cat((list(d_sents[j].values())[0], list(d_sents[k].values())[0]), 0)
-						pair_label = 0 if d_label == 'real' else 1
-						dataset.append(pair)
-						labels.append(pair_label)
-						
-						if len(dataset) == batchSize:
-						
-							torch.save(dataset, os.path.join(folder, f'pairs_{len(labels):08}.pt'))
-							
-							dataset = []
-
-					rawSamples.append((list(d_sents[j].values())[0], i, d_label))
-
-			for p, sample in enumerate(tqdm(rawSamples)):
-				#articleInd = sample[1]
-				#sentenceFromOtherArticles = [x for x in rawSamples if x[1] != articleInd]
-				# sentenceFromOtherArticles = rawSamples[:]#.copy()
-				#random.shuffle(sentenceFromOtherArticles)
-				for q in random.sample(range(len(rawSamples)), 25):
-					if sample[1] == rawSamples[q][1]:
-						continue
-					pair = torch.cat((sample[0], rawSamples[q][0]), 0)
-					pair_label = 0 if sample[2] == 'real' and rawSamples[q][2] == 'real' else 1
-					dataset.append(pair)
-					labels.append(pair_label)
-					
-					if len(dataset) == batchSize:
-					
-						torch.save(dataset, os.path.join(folder, f'pairs_{len(labels):08}.pt'))
-						
-						dataset = []
-
-			torch.save(labels, os.path.join(folder, 'labels.pt'))
-		self.labels = labels
-		# self.dataset = dataset
-		self.folder = folder
-		self.device = device
-		self.batchSize = batchSize
+		self.rawSamples = rawSamples
+		self.sampleNum = len(self.rawSamples)
+		self.homologousNum = len(self.homologousLabels)
+		
+		self.nonHomologousNum = 20
+	
 		
 
 	def __len__(self):
-		'Denotes the total number of samples'
-		return len(self.labels) // self.batchSize * self.batchSize
+
+		return self.homologousNum + self.sampleNum * self.nonHomologousNum
 
 	def __getitem__(self, index):
-		'Generates one sample of data'
-		# Select sample
 		
-		batch = (index // self.batchSize + 1) * self.batchSize
-		dataset = torch.load(os.path.join(self.folder, f'pairs_{batch:08}.pt'), map_location=self.device)
-		pair = dataset[index % self.batchSize]
-		# pair = torch.load(os.path.join(self.folder, f'pair_{index:08}.pt'), map_location=self.device)
-		# X = self.dataset[index]
-
-		# Load data and get label
-		# X = torch.load('data/' + ID + '.pt')
-		pair_label = self.labels[index]
+		if index < self.homologousNum:
+			pair = self.homologous[index]
+			pair_label = self.homologousLabels[index]
+			
+		else:
+			sent1 = self.rawSamples[(index - self.homologousNum) // self.nonHomologousNum]
+			sent2 = self.rawSamples[random.randint(1, self.sampleNum - 1)]
+			pair = torch.cat((sent1[0], sent2[0]), 0)
+			pair_label = 0 if sent1[2] == 'real' and sent2[2] == 'real' else 1
 
 		return pair, pair_label
