@@ -94,17 +94,21 @@ import os
 
 class VectorPairDataset(torch.utils.data.Dataset):
 	def __init__(self, directory, seed = random.randint(1, 1000), device = torch.device('cpu')):
-		# dataset = []
+		
 		labels = []
+		
+		batchSize = 128
 		
 		rawDataset = torch.load(directory, map_location=device)
 		rawSamples = []
 		
 		folder = directory.replace('.pt', '-pairs')
 		if os.path.exists(folder):
-			self.labels = torch.load(os.path.join(folder, 'labels.pt'), map_location=device)
+			labels = torch.load(os.path.join(folder, 'labels.pt'), map_location=device)
 		
-		else:			
+		else:
+			dataset = []
+			
 			os.makedirs(folder)
 		
 			num = len(rawDataset)
@@ -118,9 +122,14 @@ class VectorPairDataset(torch.utils.data.Dataset):
 					for k in range(j, min(20, len(d_sents))):
 						pair = torch.cat((list(d_sents[j].values())[0], list(d_sents[k].values())[0]), 0)
 						pair_label = 0 if d_label == 'real' else 1
-						# dataset.append(pair)
+						dataset.append(pair)
 						labels.append(pair_label)
-						torch.save(pair, os.path.join(folder, f'pair_{len(labels):08}.pt'))
+						
+						if len(dataset) == batchSize:
+						
+							torch.save(dataset, os.path.join(folder, f'pairs_{len(labels):08}.pt'))
+							
+							dataset = []
 
 					rawSamples.append((list(d_sents[j].values())[0], i, d_label))
 
@@ -134,15 +143,21 @@ class VectorPairDataset(torch.utils.data.Dataset):
 						continue
 					pair = torch.cat((sample[0], rawSamples[q][0]), 0)
 					pair_label = 0 if sample[2] == 'real' and rawSamples[q][2] == 'real' else 1
-					# dataset.append(pair)
+					dataset.append(pair)
 					labels.append(pair_label)
-					torch.save(pair, os.path.join(folder, f'pair_{len(labels):08}.pt'))
+					
+					if len(dataset) == batchSize:
+					
+						torch.save(dataset, os.path.join(folder, f'pairs_{len(labels):08}.pt'))
+						
+						dataset = []
 
-			self.labels = labels
 			torch.save(labels, os.path.join(folder, 'labels.pt'))
-			# self.dataset = dataset
+		self.labels = labels
+		# self.dataset = dataset
 		self.folder = folder
 		self.device = device
+		self.batchSize = batchSize
 		
 
 	def __len__(self):
@@ -152,7 +167,11 @@ class VectorPairDataset(torch.utils.data.Dataset):
 	def __getitem__(self, index):
 		'Generates one sample of data'
 		# Select sample
-		pair = torch.load(os.path.join(self.folder, f'pair_{index:08}.pt'), map_location=self.device)
+		
+		batch = (index // self.batchSize + 1) * self.batchSize
+		dataset = torch.load(os.path.join(self.folder, f'pair_{batch:08}.pt'), map_location=self.device)
+		pair = dataset[index % self.batchSize]
+		# pair = torch.load(os.path.join(self.folder, f'pair_{index:08}.pt'), map_location=self.device)
 		# X = self.dataset[index]
 
 		# Load data and get label
