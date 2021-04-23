@@ -110,7 +110,7 @@ class VectorPairDataset(torch.utils.data.Dataset):
 			for j in range(len(d_sents)):
 				for k in range(j, min(20, len(d_sents))):
 					pair = torch.cat((list(d_sents[j].values())[0], list(d_sents[k].values())[0]), 0)
-					pair_label = 0 if d_label == 'real' else 1
+					pair_label = 0 #if d_label == 'real' else 1
 					homologous.append(pair)
 					homologousLabels.append(pair_label)
 
