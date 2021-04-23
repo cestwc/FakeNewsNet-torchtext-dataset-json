@@ -137,7 +137,7 @@ class VectorPairDataset(torch.utils.data.Dataset):
 	def __getitem__(self, index):
 		'Generates one sample of data'
 		# Select sample
-		x = self.dataset[index]
+		X = self.dataset[index]
 
 		# Load data and get label
 		# X = torch.load('data/' + ID + '.pt')
