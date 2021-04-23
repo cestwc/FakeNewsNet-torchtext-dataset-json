@@ -93,11 +93,10 @@ def createSentenceVectorDataset(directory, sent2vec, shuffle = 1, seed = random.
 
 class VectorPairDataset(torch.utils.data.Dataset):
 	def __init__(self, directory, seed = random.randint(1, 1000), device = torch.device('cpu')):
-		self.labels = labels
-		self.list_IDs = list_IDs
 		dataset = []
 		labels = []
 		rawDataset = torch.load(directory, map_location=device)
+		rawSamples = []
 		
 		num = len(rawDataset)
 		
@@ -105,30 +104,39 @@ class VectorPairDataset(torch.utils.data.Dataset):
 			
 			d_label = datum['label']
 			d_sents = datum['sentences']
-			if len(d_sents) > 1:
-				
-				for j in range(len(d_sents)):
-					for k in range(j, len(d_sents)):
-						pair = torch.cat((list[d_sents[j].values()][0], list[d_sents[k].values()][0])), 0)
-						pair_label = 0 if d_label == 'real' else 1
-						dataset.append(pair)
-						labels.append(pair_label)
 			
-						
-						
+			for j in range(len(d_sents)):
+				for k in range(j, len(d_sents)):
+					pair = torch.cat((list[d_sents[j].values()][0], list[d_sents[k].values()][0])), 0)
+					pair_label = 0 if d_label == 'real' else 1
+					dataset.append(pair)
+					labels.append(pair_label)
+				rawSamples.append((list[d_sents[j].values()][0], i, d_label))
+				
+		for p, sample in enumerate(tqdm(rawSamples)):
+			articleInd = sample[1]
+			sentenceFromOtherArticles = [x for in rawSamples if x[1] != articleInd]
+			for q in range(len(sentenceFromOtherArticles)):
+				pair = torch.cat((sample[0], sentenceFromOtherArticles[q][0])), 0)
+				pair_label = 0 if sample[2] == 'real' and sentenceFromOtherArticles[q][2] == 'real' else 1
+				dataset.append(pair)
+				labels.append(pair_label)
+		
+		self.labels = labels
+		self.dataset = dataset
 		
 
 	def __len__(self):
 		'Denotes the total number of samples'
-		return len(self.list_IDs)
+		return len(self.labels)
 
 	def __getitem__(self, index):
 		'Generates one sample of data'
 		# Select sample
-		ID = self.list_IDs[index]
+		x = self.dataset[index]
 
 		# Load data and get label
-		X = torch.load('data/' + ID + '.pt')
-		y = self.labels[ID]
+		# X = torch.load('data/' + ID + '.pt')
+		y = self.labels[index]
 
 		return X, y
