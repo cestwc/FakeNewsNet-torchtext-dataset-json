@@ -90,8 +90,7 @@ def createSentenceVectorDataset(directory, sent2vec, shuffle = 1, seed = random.
 
 	return directory.replace('.json', '.pt')
 
-import os
-
+import gc
 class VectorPairDataset(torch.utils.data.Dataset):
 	def __init__(self, directory, seed = random.randint(1, 1000), device = torch.device('cpu')):
 				
@@ -126,6 +125,9 @@ class VectorPairDataset(torch.utils.data.Dataset):
 		self.homologousNum = len(self.homologousLabels)
 		
 		self.nonHomologousNum = 20
+		
+		del rawDataset
+		gc.collect()
 	
 		
 
