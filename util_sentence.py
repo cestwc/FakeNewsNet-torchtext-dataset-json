@@ -115,9 +115,12 @@ class VectorPairDataset(torch.utils.data.Dataset):
 				
 		for p, sample in enumerate(tqdm(rawSamples)):
 			articleInd = sample[1]
-			sentenceFromOtherArticles = [x for x in rawSamples if x[1] != articleInd]
+			#sentenceFromOtherArticles = [x for x in rawSamples if x[1] != articleInd]
+			sentenceFromOtherArticles = rawSamples[:]#.copy()
 			random.shuffle(sentenceFromOtherArticles)
-			for q in range(min(20, len(sentenceFromOtherArticles))):
+			for q in range(min(25, len(sentenceFromOtherArticles))):
+				if sample[1] == sentenceFromOtherArticles[q][1]:
+					continue
 				pair = torch.cat((sample[0], sentenceFromOtherArticles[q][0]), 0)
 				pair_label = 0 if sample[2] == 'real' and sentenceFromOtherArticles[q][2] == 'real' else 1
 				dataset.append(pair)
