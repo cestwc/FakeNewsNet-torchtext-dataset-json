@@ -107,7 +107,7 @@ class VectorPairDataset(torch.utils.data.Dataset):
 			
 			for j in range(len(d_sents)):
 				for k in range(j, len(d_sents)):
-					pair = torch.cat((list[d_sents[j].values()][0], list[d_sents[k].values()][0])), 0)
+					pair = torch.cat((list[d_sents[j].values()][0], list[d_sents[k].values()][0]), 0)
 					pair_label = 0 if d_label == 'real' else 1
 					dataset.append(pair)
 					labels.append(pair_label)
@@ -115,9 +115,9 @@ class VectorPairDataset(torch.utils.data.Dataset):
 				
 		for p, sample in enumerate(tqdm(rawSamples)):
 			articleInd = sample[1]
-			sentenceFromOtherArticles = [x for in rawSamples if x[1] != articleInd]
+			sentenceFromOtherArticles = [x for x in rawSamples if x[1] != articleInd]
 			for q in range(len(sentenceFromOtherArticles)):
-				pair = torch.cat((sample[0], sentenceFromOtherArticles[q][0])), 0)
+				pair = torch.cat((sample[0], sentenceFromOtherArticles[q][0]), 0)
 				pair_label = 0 if sample[2] == 'real' and sentenceFromOtherArticles[q][2] == 'real' else 1
 				dataset.append(pair)
 				labels.append(pair_label)
