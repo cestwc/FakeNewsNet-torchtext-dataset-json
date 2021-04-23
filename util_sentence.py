@@ -100,43 +100,47 @@ class VectorPairDataset(torch.utils.data.Dataset):
 		rawDataset = torch.load(directory, map_location=device)
 		rawSamples = []
 		
-		folder = 'vector_pairs'
-		if not os.path.exists(folder):
+		folder = directory.replace('.pt', '-pairs')
+		if os.path.exists(folder):
+			self.labels = torch.load(os.path.join(folder, 'labels.pt'), map_location=device)
+		
+		else:			
 			os.makedirs(folder)
 		
-		num = len(rawDataset)
-		
-		for i, datum in enumerate(tqdm(rawDataset)):
-			
-			d_label = datum['label']
-			d_sents = datum['sentences']
-			
-			for j in range(len(d_sents)):
-				for k in range(j, min(20, len(d_sents))):
-					pair = torch.cat((list(d_sents[j].values())[0], list(d_sents[k].values())[0]), 0)
-					pair_label = 0 if d_label == 'real' else 1
+			num = len(rawDataset)
+
+			for i, datum in enumerate(tqdm(rawDataset)):
+
+				d_label = datum['label']
+				d_sents = datum['sentences']
+
+				for j in range(len(d_sents)):
+					for k in range(j, min(20, len(d_sents))):
+						pair = torch.cat((list(d_sents[j].values())[0], list(d_sents[k].values())[0]), 0)
+						pair_label = 0 if d_label == 'real' else 1
+						# dataset.append(pair)
+						labels.append(pair_label)
+						torch.save(pair, os.path.join(folder, f'pair_{len(labels):08}.pt'))
+
+					rawSamples.append((list(d_sents[j].values())[0], i, d_label))
+
+			for p, sample in enumerate(tqdm(rawSamples)):
+				#articleInd = sample[1]
+				#sentenceFromOtherArticles = [x for x in rawSamples if x[1] != articleInd]
+				# sentenceFromOtherArticles = rawSamples[:]#.copy()
+				#random.shuffle(sentenceFromOtherArticles)
+				for q in random.sample(range(len(rawSamples)), 25):
+					if sample[1] == rawSamples[q][1]:
+						continue
+					pair = torch.cat((sample[0], rawSamples[q][0]), 0)
+					pair_label = 0 if sample[2] == 'real' and rawSamples[q][2] == 'real' else 1
 					# dataset.append(pair)
 					labels.append(pair_label)
 					torch.save(pair, os.path.join(folder, f'pair_{len(labels):08}.pt'))
-					
-				rawSamples.append((list(d_sents[j].values())[0], i, d_label))
-				
-		for p, sample in enumerate(tqdm(rawSamples)):
-			#articleInd = sample[1]
-			#sentenceFromOtherArticles = [x for x in rawSamples if x[1] != articleInd]
-			# sentenceFromOtherArticles = rawSamples[:]#.copy()
-			#random.shuffle(sentenceFromOtherArticles)
-			for q in random.sample(range(len(rawSamples)), 25):
-				if sample[1] == rawSamples[q][1]:
-					continue
-				pair = torch.cat((sample[0], rawSamples[q][0]), 0)
-				pair_label = 0 if sample[2] == 'real' and rawSamples[q][2] == 'real' else 1
-				# dataset.append(pair)
-				labels.append(pair_label)
-				torch.save(pair, os.path.join(folder, f'pair_{len(labels):08}.pt'))
-		
-		self.labels = labels
-		# self.dataset = dataset
+
+			self.labels = labels
+			torch.save(labels, os.path.join(folder, 'labels.pt'))
+			# self.dataset = dataset
 		self.folder = folder
 		self.device = device
 		
