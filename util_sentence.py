@@ -111,7 +111,7 @@ class VectorPairDataset(torch.utils.data.Dataset):
 					pair_label = 0 if d_label == 'real' else 1
 					dataset.append(pair)
 					labels.append(pair_label)
-				rawSamples.append((list[d_sents[j].values()][0], i, d_label))
+				rawSamples.append((list(d_sents[j].values())[0], i, d_label))
 				
 		for p, sample in enumerate(tqdm(rawSamples)):
 			articleInd = sample[1]
