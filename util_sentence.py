@@ -162,14 +162,14 @@ class VectorPairDataset(torch.utils.data.Dataset):
 
 	def __len__(self):
 		'Denotes the total number of samples'
-		return len(self.labels)
+		return len(self.labels) // self.batchSize * self.batchSize
 
 	def __getitem__(self, index):
 		'Generates one sample of data'
 		# Select sample
 		
 		batch = (index // self.batchSize + 1) * self.batchSize
-		dataset = torch.load(os.path.join(self.folder, f'pair_{batch:08}.pt'), map_location=self.device)
+		dataset = torch.load(os.path.join(folder, f'pairs_{batch:08}.pt'), map_location=self.device)
 		pair = dataset[index % self.batchSize]
 		# pair = torch.load(os.path.join(self.folder, f'pair_{index:08}.pt'), map_location=self.device)
 		# X = self.dataset[index]
