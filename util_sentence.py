@@ -90,13 +90,19 @@ def createSentenceVectorDataset(directory, sent2vec, shuffle = 1, seed = random.
 
 	return directory.replace('.json', '.pt')
 
+import os
 
 class VectorPairDataset(torch.utils.data.Dataset):
 	def __init__(self, directory, seed = random.randint(1, 1000), device = torch.device('cpu')):
-		dataset = []
+		# dataset = []
 		labels = []
+		
 		rawDataset = torch.load(directory, map_location=device)
 		rawSamples = []
+		
+		folder = 'vector_pairs'
+		if not os.path.exists(folder):
+			os.makedirs(folder)
 		
 		num = len(rawDataset)
 		
@@ -109,8 +115,10 @@ class VectorPairDataset(torch.utils.data.Dataset):
 				for k in range(j, min(20, len(d_sents))):
 					pair = torch.cat((list(d_sents[j].values())[0], list(d_sents[k].values())[0]), 0)
 					pair_label = 0 if d_label == 'real' else 1
-					dataset.append(pair)
+					# dataset.append(pair)
 					labels.append(pair_label)
+					torch.save(pair, os.path.join(folder, f'pair_{len(labels):08}.pt'))
+					
 				rawSamples.append((list(d_sents[j].values())[0], i, d_label))
 				
 		for p, sample in enumerate(tqdm(rawSamples)):
@@ -123,11 +131,14 @@ class VectorPairDataset(torch.utils.data.Dataset):
 					continue
 				pair = torch.cat((sample[0], rawSamples[q][0]), 0)
 				pair_label = 0 if sample[2] == 'real' and rawSamples[q][2] == 'real' else 1
-				dataset.append(pair)
+				# dataset.append(pair)
 				labels.append(pair_label)
+				torch.save(pair, os.path.join(folder, f'pair_{len(labels):08}.pt'))
 		
 		self.labels = labels
-		self.dataset = dataset
+		# self.dataset = dataset
+		self.folder = folder
+		self.device = device
 		
 
 	def __len__(self):
@@ -137,10 +148,11 @@ class VectorPairDataset(torch.utils.data.Dataset):
 	def __getitem__(self, index):
 		'Generates one sample of data'
 		# Select sample
-		X = self.dataset[index]
+		pair = torch.load(os.path.join(self.folder, f'pair_{index:08}.pt'), map_location=self.device)
+		# X = self.dataset[index]
 
 		# Load data and get label
 		# X = torch.load('data/' + ID + '.pt')
-		y = self.labels[index]
+		pair_label = self.labels[index]
 
-		return X, y
+		return pair, pair_label
