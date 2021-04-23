@@ -124,7 +124,7 @@ class VectorPairDataset(torch.utils.data.Dataset):
 		self.sampleNum = len(self.rawSamples)
 		self.homologousNum = len(self.homologousLabels)
 		
-		self.nonHomologousNum = 3
+		self.nonHomologousNum = 7
 		
 		del rawDataset
 		gc.collect()
