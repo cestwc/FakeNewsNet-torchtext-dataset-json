@@ -118,8 +118,7 @@ class VectorPairDataset(torch.utils.data.Dataset):
 			#sentenceFromOtherArticles = [x for x in rawSamples if x[1] != articleInd]
 			# sentenceFromOtherArticles = rawSamples[:]#.copy()
 			#random.shuffle(sentenceFromOtherArticles)
-			
-			for q in random.sample(range(rawSamples), 25):
+			for q in random.sample(range(len(rawSamples)), 25):
 				if sample[1] == rawSamples[q][1]:
 					continue
 				pair = torch.cat((sample[0], rawSamples[q][0]), 0)
