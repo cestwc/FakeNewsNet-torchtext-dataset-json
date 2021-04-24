@@ -117,5 +117,26 @@ Note that publish ```date``` of each entry is in a float number. We use the Unix
 
 Many fields, like ```keywords``` or ```summary```, might not exist, either.
 
+You can also view the news text and its label like this, in case you want to guess whether a piece of news is real or fake
+```python
+import json
+import random
+import textwrap
+
+def newsView(index = None, directory = 'fakenewsnet_sm.json'):
+	with open(directory, 'r') as f:
+		data = f.readlines()
+
+	if index == None:
+		index = random.randint(0, len(data) - 1)
+
+	news = json.loads(data[index])
+
+	print(textwrap.fill(news['text'], 100))
+	print('\n'*10, news['label'])
+
+newsView()
+```
+
 ## Final words
 The **Usage** section introduced above can just nicely work with this [Tutorial](https://github.com/bentrevett/pytorch-sentiment-analysis/blob/master/2%20-%20Upgraded%20Sentiment%20Analysis.ipynb), which helped me a lot (and still helping) when I began to learn topics on languages. However, the accuracy is an LSTM, if applied here, will not be better than that of a random guess. The manual above is only to show you how you could load this dataset. You may want to take a look at the transformer [version](https://github.com/bentrevett/pytorch-sentiment-analysis/blob/master/6%20-%20Transformers%20for%20Sentiment%20Analysis.ipynb) of the tutorial series, which could give you at least 70% accuracy on the test set.
